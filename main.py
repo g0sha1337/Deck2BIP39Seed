@@ -2,13 +2,18 @@ import hashlib
 
 
 def ask_card_sute(number_of_card):
-    # !TODO create validation of input
+    suite = 0
     suite = int(input(f'What is the card suit of {number_of_card}\'s card?\n\n1 - Diamonds (Бубны)\n2 - Hearts (Червы)\n3 - Spades (Пики)\n4 - Clubs (Трефы)'))
+    while not (1<=suite<=4):
+        suite = int(input(f'\nInvalid input, try again\nWhat is the card suit of {number_of_card}\'s card?\n\n1 - Diamonds (Бубны)\n2 - Hearts (Червы)\n3 - Spades (Пики)\n4 - Clubs (Трефы)'))
+
     return bin(suite)[2::].zfill(2)# fill 2 bit if they are empty
 
 def ask_card_rank(number_of_card):
-    # !TODO create validation of input
+    rank = 0 
     rank = int(input(f'What is the card rank of the {number_of_card}\'s card?\n\n1 - Six (Шестерка)\n2 - Seven (Семерка)\n3 - Eight (Восьмерка)\n4 - Nine (Девятка)\n5 - Ten (Десятка)\n6 - Jack (Валет)\n7 - Queen (Дама)\n8 - King (Король)\n9 - Ace (Туз)'))
+    while not (1<=rank<=9):
+        rank = int(input(f'\nInvalid input, try again\nWhat is the card rank of the {number_of_card}\'s card?\n\n1 - Six (Шестерка)\n2 - Seven (Семерка)\n3 - Eight (Восьмерка)\n4 - Nine (Девятка)\n5 - Ten (Десятка)\n6 - Jack (Валет)\n7 - Queen (Дама)\n8 - King (Король)\n9 - Ace (Туз)'))
     return bin(rank)[2::].zfill(4) # fill 4 bit if they are empty
 
 def bits2seed(bits):
@@ -30,37 +35,36 @@ def bits2seed(bits):
     return seed
 
 def checksum (bits):
+    if len(bits) != 128:
+        print("Some error acured...")
+        exit(-1)
     int_value = int(bits, 2)
-
-    # Преобразуем целое число в байты (16 байт для 128 бит)
     byte_value = int_value.to_bytes(16, byteorder='big')
-
-    # Получаем SHA-256 хэш
-    hash_value = hashlib.sha256(byte_value).digest()  # Используем .digest() для получения байтов
-
-    # Преобразуем байты хэша в двоичный формат
+    hash_value = hashlib.sha256(byte_value).digest() 
     binary_hash = ''.join(format(byte, '08b') for byte in hash_value)
 
-    return binary_hash[:4]  # Возвращаем первые 4 бита
+    return binary_hash[:4] 
 
 if __name__ == '__main__':
     print("Deck of 36 card to 12 words bip39 seed")
     value128bit = ""
-    value128bit += '10100000000010000001010000001001000000001001110001000000010010000000001000000100010000000001000100100100101000010000000011100100'
-
-    # for i in range(0,23): #main cycle to read combination of 22 cardz
-    #     carddata = ""
-    #     carddata +=ask_card_sute(i+1)
-    #     carddata +=ask_card_rank(i+1)
-    #     print(f'your num is {carddata}')
-    #     value128bit+=carddata
-
-    # value128bit = value128bit[:-4] # cut last 4 bit from 22's card to make 128bit value
     
-    value128bit += checksum(value128bit)
+
+    for i in range(0,22): #main cycle to read combination of 22 cardz
+        carddata = ""
+        carddata +=ask_card_sute(i+1)
+        carddata +=ask_card_rank(i+1)
+        print(f'your num is {carddata}')
+        value128bit+=carddata
+
+    #value128bit = value128bit[:-10] # cut last 4 bit from 22's card to make 128bit value
+    while (len(value128bit) != 128):
+        value128bit = value128bit[:-1]
+    
     print(f'{value128bit} - {len(value128bit)} bits')
+    value128bit += checksum(value128bit)
     seed = bits2seed(value128bit)
-    print (f'COOL, YOUR SEED IS {seed}')
+    print (f'YOUR GENERATED SEED IS {seed}')
 
 
         
