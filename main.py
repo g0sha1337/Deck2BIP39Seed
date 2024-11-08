@@ -64,7 +64,7 @@ if __name__ == '__main__':
     print(f'{value128bit} - {len(value128bit)} bits')
     value128bit += checksum(value128bit)
     seed = bits2seed(value128bit)
-    print (f'YOUR GENERATED SEED IS {seed}')
+    print (f'YOUR GENERATED SEED IS: \n{seed}')
 
 
         
